@@ -1,3 +1,4 @@
+# from socket import CAN_BCM_RX_ANNOUNCE_RESUME
 import numpy as np
 from agent import Agent
 
@@ -21,7 +22,7 @@ class PolicyIterationAgent(Agent):
         # Policy initialization
         # ******************
         # TODO 1.1.a)
-        self.V = 0
+        self.V = {s : 0 for s in states}
 
         # *******************
 
@@ -38,13 +39,17 @@ class PolicyIterationAgent(Agent):
                     # *****************
                     # TODO 1.1.b)
                     if self.mdp.isTerminal(s):
-                        return None
+                        newV[s] = 0.0
                     else:
-                        continue
+                        trans_prob = self.mdp.getTransitionStatesAndProbs(s,a)
+                        currV=0
+                        for t in trans_prob:
+                            nextState, prob = t
+                            currV += prob*(self.mdp.getReward(s,a,nextState)+self.discount*self.V[nextState]) 
+                        newV[s] = currV
+                self.V = newV
 
                 # update value estimate
-                self.mdp.getTransitionStatesAndProbs(s,a)
-                self.V += 
 
                 # ******************
 
@@ -57,9 +62,18 @@ class PolicyIterationAgent(Agent):
                     old_action = self.pi[s]
                     # ************
                     # TODO 1.1.c)
-                    # self.pi[s] = ...
+                    for a in actions:
 
-                    # policy_stable =
+                        trans_prob = self.mdp.getTransitionStatesAndProbs(s,a)
+                        currQ={a : 0}
+                        for t in trans_prob:
+                            nextState, prob = t
+                            currQ[a] += prob*(self.mdp.getReward(s,a,nextState)+self.discount*self.V[nextState]) 
+
+                    self.pi[s] = max(currQ, key=currQ.get)
+
+                    if old_action != self.pi[s]:
+                        policy_stable = False
 
                     # ****************
             counter += 1
@@ -74,7 +88,7 @@ class PolicyIterationAgent(Agent):
         """
         # *******
         # TODO 1.2.
-
+        return self.V[state]
         # ********
 
     def getQValue(self, state, action):
@@ -87,7 +101,12 @@ class PolicyIterationAgent(Agent):
         """
         # *********
         # TODO 1.3.
-
+        trans_prob = self.mdp.getTransitionStatesAndProbs(state,action)
+        currQ=0
+        for t in trans_prob:
+            nextState, prob = t
+            currQ += prob*(self.mdp.getReward(state,action,nextState)+self.discount*self.V[nextState]) 
+        return currQ 
         # **********
 
     def getPolicy(self, state):
@@ -97,7 +116,7 @@ class PolicyIterationAgent(Agent):
         """
         # **********
         # TODO 1.4.
-
+        return self.pi[state]
         # **********
 
     def getAction(self, state):
