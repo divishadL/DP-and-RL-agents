@@ -47,7 +47,7 @@ class PolicyIterationAgent(Agent):
                             nextState, prob = t
                             currV += prob*(self.mdp.getReward(s,a,nextState)+self.discount*self.V[nextState]) 
                         newV[s] = currV
-                self.V = newV
+                        self.V[s]= newV[s]
 
                 # update value estimate
 
@@ -62,17 +62,16 @@ class PolicyIterationAgent(Agent):
                     old_action = self.pi[s]
                     # ************
                     # TODO 1.1.c)
+                    currQ={a : 0 for a in actions}
                     for a in actions:
-
                         trans_prob = self.mdp.getTransitionStatesAndProbs(s,a)
-                        currQ={a : 0}
                         for t in trans_prob:
                             nextState, prob = t
                             currQ[a] += prob*(self.mdp.getReward(s,a,nextState)+self.discount*self.V[nextState]) 
-
+                        
                     self.pi[s] = max(currQ, key=currQ.get)
-
-                    if old_action != self.pi[s]:
+                    if self.pi[s] != old_action:
+                        print("policy unstable")
                         policy_stable = False
 
                     # ****************
