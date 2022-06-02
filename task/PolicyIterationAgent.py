@@ -39,7 +39,7 @@ class PolicyIterationAgent(Agent):
                     # *****************
                     # TODO 1.1.b)
                     if self.mdp.isTerminal(s):
-                        newV[s] = 0.0
+                        self.V[s] = 0.0
                     else:
                         trans_prob = self.mdp.getTransitionStatesAndProbs(s,a)
                         currV=0
@@ -61,7 +61,7 @@ class PolicyIterationAgent(Agent):
                 else:
                     old_action = self.pi[s]
                     # ************
-                    # TODO 1.1.c)
+                    
                     currQ={a : 0 for a in actions}
                     for a in actions:
                         trans_prob = self.mdp.getTransitionStatesAndProbs(s,a)
@@ -71,7 +71,6 @@ class PolicyIterationAgent(Agent):
                         
                     self.pi[s] = max(currQ, key=currQ.get)
                     if self.pi[s] != old_action:
-                        print("policy unstable")
                         policy_stable = False
 
                     # ****************
@@ -86,7 +85,7 @@ class PolicyIterationAgent(Agent):
         Look up the value of the state (after the policy converged).
         """
         # *******
-        # TODO 1.2.
+        
         return self.V[state]
         # ********
 
@@ -99,7 +98,7 @@ class PolicyIterationAgent(Agent):
         to derive it on the fly.
         """
         # *********
-        # TODO 1.3.
+        
         trans_prob = self.mdp.getTransitionStatesAndProbs(state,action)
         currQ=0
         for t in trans_prob:
@@ -114,7 +113,7 @@ class PolicyIterationAgent(Agent):
         (after the indicated number of value iteration passes).
         """
         # **********
-        # TODO 1.4.
+        
         return self.pi[state]
         # **********
 
